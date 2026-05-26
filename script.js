@@ -5,48 +5,60 @@ function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(completed)); }
 function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+// ── Parse markdown ──────────────────────────────────────────────────────────
 const tmpl = document.getElementById('courseMarkdown');
 const raw  = tmpl ? tmpl.innerHTML.trim() : '';
 const lines = raw.split(/\r?\n/);
 
-const rawLessons = [];
-let cur = null;
+// Skip non-module ## headings (Course Overview, Who This Course Is For, etc.)
+const MODULE_PREFIXES = ['module','final project','bonus templates'];
+function isModuleHeading(title){
+  const t = title.toLowerCase();
+  return MODULE_PREFIXES.some(p => t.startsWith(p));
+}
+
+const modules = [];
+let curMod = null, curLesson = null;
 
 for(let i = 0; i < lines.length; i++){
   const line = lines[i], trim = line.trim();
   if(!trim || trim === '---') continue;
-  // Skip H1 lines (module headers, section headers)
-  if(/^# /.test(line)) continue;
+  if(/^# /.test(line)) continue; // skip H1
 
-  // H2 = a lesson — only accept if title has a number prefix like 1.1 or Final or Template
+  // H2 = module (only if it starts with Module, Final Project, or Bonus Templates)
   if(/^## /.test(line)){
     const title = trim.slice(3).trim();
-    const hasNum = /(?:lesson\s+)?\d+\.\d+/i.test(title);
-    const isFinal = /final/i.test(title);
-    const isTemplate = /template\s+\d+/i.test(title);
-    if(cur) rawLessons.push(cur);
-    if(hasNum || isFinal || isTemplate){
-      cur = { title, body: '', prompts: [] };
+    curLesson = null;
+    if(isModuleHeading(title)){
+      curMod = { title, id: slug(title), lessons: [] };
+      modules.push(curMod);
     } else {
-      cur = null; // skip non-lesson H2s like "Course Overview"
+      curMod = null; // skip Course Overview, Who This Course Is For, etc.
     }
     continue;
   }
 
-  if(!cur) continue;
-
+  // H3 = lesson inside a module
   if(/^### /.test(line)){
-    cur.body += `<p class="lesson-subhead">${esc(trim.slice(4).trim())}</p>`;
+    if(!curMod) continue;
+    const title = trim.slice(4).trim();
+    curLesson = { title, id: slug(title), body: '', prompts: [] };
+    curMod.lessons.push(curLesson);
     continue;
   }
+
+  if(!curLesson) continue;
+
+  // Code block
   if(trim.startsWith('```')){
     let code = ''; i++;
     while(i < lines.length && !lines[i].trim().startsWith('```')){ code += lines[i] + '\n'; i++; }
     const c = code.trim();
-    cur.prompts.push(c);
-    cur.body += `<div class="code-box"><button class="copy-btn">Copy</button><pre><code>${esc(c)}</code></pre></div>`;
+    curLesson.prompts.push(c);
+    curLesson.body += `<div class="code-box"><button class="copy-btn">Copy</button><pre><code>${esc(c)}</code></pre></div>`;
     continue;
   }
+  // Table
   if(trim.startsWith('|')){
     let tbl = '<div class="table-wrap"><table><tbody>';
     while(i < lines.length && lines[i].trim().startsWith('|')){
@@ -55,64 +67,32 @@ for(let i = 0; i < lines.length; i++){
       tbl += '<tr>' + cells.map(c => `<td>${esc(c.trim())}</td>`).join('') + '</tr>'; i++;
     }
     tbl += '</tbody></table></div>'; i--;
-    cur.body += tbl; continue;
+    curLesson.body += tbl; continue;
   }
+  // Unordered list
   if(trim.startsWith('- ')){
     let ul = '<ul>';
     while(i < lines.length && lines[i].trim().startsWith('- ')){ ul += `<li>${esc(lines[i].trim().slice(2))}</li>`; i++; }
     ul += '</ul>'; i--;
-    cur.body += ul; continue;
+    curLesson.body += ul; continue;
   }
+  // Ordered list
   if(/^\d+\. /.test(trim)){
     let ol = '<ol>';
     while(i < lines.length && /^\d+\. /.test((lines[i]||'').trim())){
       ol += `<li>${esc(lines[i].trim().replace(/^\d+\. /,''))}</li>`; i++;
     }
     ol += '</ol>'; i--;
-    cur.body += ol; continue;
+    curLesson.body += ol; continue;
   }
-  if(trim) cur.body += `<p>${esc(trim)}</p>`;
-}
-if(cur) rawLessons.push(cur);
-
-// Module definitions
-const MODULE_NAMES = [
-  'Understanding the Big Picture',
-  'Understanding AI in Plain Language',
-  'The Core Workflow',
-  'Building Your Model',
-  'Prompt Writing for Images',
-  'Styling and Posing',
-  'Backgrounds and Scenes',
-  'Photography Styles',
-  'Mood Boards and Brand Consistency',
-  'Product Placement in Higgsfield',
-  'Nana Banana Pro Workflow',
-  'Turning Images Into Videos',
-  'Content Strategy and Publishing',
-  'Final Project',
-  'Bonus Templates'
-];
-
-const modules = MODULE_NAMES.map(name => ({ title: name, id: slug(name), lessons: [] }));
-
-function getModuleIndex(title){
-  const m = title.match(/(?:lesson\s+)?(\d+)\.\d+/i);
-  if(m){ const n = parseInt(m[1],10); if(n>=1&&n<=13) return n-1; }
-  if(/final/i.test(title)) return 13;
-  if(/template/i.test(title)) return 14;
-  return -1;
+  // Paragraph
+  if(trim) curLesson.body += `<p>${esc(trim)}</p>`;
 }
 
-rawLessons.forEach(l => {
-  const mi = getModuleIndex(l.title);
-  if(mi >= 0 && mi < modules.length){
-    modules[mi].lessons.push({ title: l.title, id: slug(l.title), body: l.body, prompts: l.prompts });
-  }
-});
-
+// Remove empty modules
 const activeModules = modules.filter(m => m.lessons.length > 0);
 
+// ── State helpers ───────────────────────────────────────────────────────────
 function isModComplete(mod){ return mod.lessons.length > 0 && mod.lessons.every(l => completed[l.id]); }
 function isModUnlocked(mi){ return mi === 0 || isModComplete(activeModules[mi-1]); }
 function allLessons(){ return activeModules.flatMap(m => m.lessons); }
@@ -122,6 +102,7 @@ let currentLessonId = null;
 const mainView   = document.getElementById('mainView');
 const lessonView = document.getElementById('lessonView');
 
+// ── Dashboard ───────────────────────────────────────────────────────────────
 function showDashboard(){
   currentLessonId = null;
   mainView.style.display = 'block';
@@ -131,6 +112,7 @@ function showDashboard(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+// ── Lesson view ─────────────────────────────────────────────────────────────
 function showLesson(lessonId){
   const lesson = allLessons().find(l => l.id === lessonId);
   if(!lesson) return;
@@ -196,6 +178,7 @@ function showLesson(lessonId){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+// ── Sidebar ─────────────────────────────────────────────────────────────────
 function renderNav(){
   const nav = document.getElementById('moduleNav');
   nav.innerHTML = '';
@@ -229,6 +212,7 @@ function renderNav(){
   });
 }
 
+// ── Progress ─────────────────────────────────────────────────────────────────
 function updateProgress(){
   const all = allLessons();
   const done = all.filter(l => completed[l.id]).length;
@@ -249,6 +233,7 @@ function updateProgress(){
   }
 }
 
+// ── Init ─────────────────────────────────────────────────────────────────────
 function init(){
   renderNav(); updateProgress(); showDashboard();
   function doResume(){
