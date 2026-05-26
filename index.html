@@ -10,38 +10,127 @@
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
 <header class="topbar">
-<button class="menu-toggle" id="menuToggle" aria-label="Open course menu"><span></span><span></span><span></span></button>
-<a href="#top" class="brand">How To Create AI Models for Your Brand</a>
-<div class="progress-wrap" aria-label="Course progress"><span id="progressText">0%</span><div class="progress-track"><div id="progressBar" class="progress-fill"></div></div></div>
+  <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <button class="brand" id="brandLink">How To Create AI Models for Your Brand</button>
+  <div class="progress-wrap">
+    <span id="progressText">0%</span>
+    <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+  </div>
 </header>
-<div class="layout" id="top">
-<aside class="sidebar" id="sidebar">
-<div class="sidebar-head"><span>Course Lessons</span><button id="closeSidebar" aria-label="Close course menu">×</button></div>
-<nav id="moduleNav" class="module-nav" aria-label="Course navigation"></nav>
-</aside>
-<main class="content">
-<section class="hero" id="hero">
-<p class="eyebrow">Premium Brand Visual Course</p>
-<h1>How To Create AI Models for Your Brand</h1>
-<p class="tagline">Build realistic AI models, branded scenes, product visuals, and short video-ready campaign assets using a repeatable creative system.</p>
-<div class="hero-grid"><div><strong>Format</strong><span>Self-paced lessons</span></div><div><strong>Level</strong><span>Beginner friendly</span></div><div><strong>Tools</strong><span>ChatGPT, Claude, Higgsfield, Nana Banana Pro</span></div></div>
-</section>
-<div class="dashboard-grid">
-<section class="dashboard-card stats-card"><div class="card-label">Course progress</div><div class="stats-row"><div class="stat"><span id="modulesDone">0</span><small>Modules done</small></div><div class="stat"><span id="lessonsDone">0</span><small>Lessons done</small></div><div class="stat"><span id="timeLeft">4h</span><small>Time left</small></div></div><button class="primary-btn" id="resumeBtn">Continue where you left off</button></section>
-<section class="dashboard-card tools-card"><div class="card-label">Tools reference</div><div class="tool-list"><div class="tool-item"><strong>Higgsfield</strong><span>Main image and video generator</span></div><div class="tool-item"><strong>Claude / ChatGPT</strong><span>Prompt writing and planning</span></div><div class="tool-item"><strong>Nana Banana Pro</strong><span>Product and clothing replacement</span></div></div></section>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span>Course Modules</span>
+      <button id="closeSidebar">×</button>
+    </div>
+    <nav id="moduleNav" class="module-nav"></nav>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="mainView">
+
+      <!-- Hero -->
+      <section class="hero">
+        <p class="eyebrow">Premium Brand Visual Course</p>
+        <h1>How To Create AI Models for Your Brand</h1>
+        <p class="tagline">Build realistic AI models, branded scenes, product visuals, and short video-ready campaign assets using a repeatable creative system.</p>
+        <div class="hero-grid">
+          <div><strong>Format</strong><span>Self-paced lessons</span></div>
+          <div><strong>Level</strong><span>Beginner friendly</span></div>
+          <div><strong>Tools</strong><span>ChatGPT, Claude, Higgsfield, Nana Banana Pro</span></div>
+        </div>
+        <button class="start-course-btn" id="startCourseBtn">Start Course <span class="arrow">&#8594;</span></button>
+      </section>
+
+      <!-- Stats + Tools -->
+      <div class="dashboard-grid">
+        <section class="dashboard-card">
+          <div class="card-label">Course Progress</div>
+          <div class="stats-row">
+            <div class="stat"><span id="modulesDone">0</span><small>Modules done</small></div>
+            <div class="stat"><span id="lessonsDone">0</span><small>Lessons done</small></div>
+            <div class="stat"><span id="timeLeft">4h</span><small>Est. time</small></div>
+          </div>
+          <button class="primary-btn" id="resumeBtn">Continue where you left off</button>
+        </section>
+        <section class="dashboard-card">
+          <div class="card-label">Tools Reference</div>
+          <div class="tool-list">
+            <div class="tool-item"><strong>Higgsfield</strong><span>Main image and video generator</span></div>
+            <div class="tool-item"><strong>Claude / ChatGPT</strong><span>Prompt writing and planning</span></div>
+            <div class="tool-item"><strong>Nana Banana Pro</strong><span>Product and clothing replacement</span></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Next Up -->
+      <section class="dashboard-card featured-card">
+        <div class="card-label">Next Up</div>
+        <h2 id="nextLessonTitle">Lesson 1.1 — What You Are Actually Building</h2>
+        <p id="nextLessonDesc">Start with the core workflow and get oriented before generating anything.</p>
+        <button class="primary-btn" id="resumeBtn2">Jump In &#8594;</button>
+      </section>
+
+      <!-- Course Overview -->
+      <section class="dashboard-card overview-card">
+        <div class="card-label">Course Overview</div>
+        <h3>What This Course Is</h3>
+        <p>A beginner-friendly system for building AI-powered brand visuals from scratch. You will learn how to create realistic AI models, build scenes that match your brand, place your real products onto those models, and turn images into short videos for social media, ads, and websites.</p>
+        <p>You will use a workflow built around ChatGPT or Claude, Higgsfield Soul 2.0, and Nana Banana Pro. No code, design experience, or photography knowledge required.</p>
+      </section>
+
+      <!-- Who This Is For -->
+      <section class="dashboard-card overview-card">
+        <div class="card-label">Who This Course Is For</div>
+        <h3>This Course Is Built For</h3>
+        <ul>
+          <li>Streetwear and commercial brand owners</li>
+          <li>Artists, creators, and entrepreneurs</li>
+          <li>Freelancers building content for clients</li>
+          <li>Beginners who want professional visuals without a photoshoot</li>
+        </ul>
+      </section>
+
+      <!-- Prompt Library -->
+      <section class="dashboard-card prompt-card">
+        <div class="card-head">
+          <div class="card-label">Prompt Library</div>
+        </div>
+        <div id="promptLibrary" class="prompt-library"></div>
+      </section>
+
+      <!-- Gallery -->
+      <section class="dashboard-card" style="margin-bottom:16px">
+        <div class="card-label">Before &amp; After Gallery</div>
+        <div class="gallery-grid">
+          <div class="gallery-slot"><span>Before</span><div class="placeholder">Blank base model</div></div>
+          <div class="gallery-slot"><span>After</span><div class="placeholder">Product placed version</div></div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <strong>How To Create AI Models for Your Brand</strong>
+        <span>&copy; 2026. All rights reserved.</span>
+      </footer>
+
+    </div>
+    <!-- END DASHBOARD VIEW -->
+
+    <!-- LESSON VIEW (injected by JS) -->
+    <div id="lessonView"></div>
+
+  </main>
 </div>
-<section class="dashboard-card featured-card"><div class="card-label">Next up</div><h2 id="nextLessonTitle">Lesson 1.1: What You Are Actually Building</h2><p id="nextLessonDesc">Start with the core workflow and get oriented before generating anything.</p></section>
-<section class="dashboard-card prompt-card"><div class="card-head"><div class="card-label">Prompt library</div><button class="secondary-btn" id="copyAllPrompts">Copy all prompts</button></div><div id="promptLibrary" class="prompt-library"></div></section>
-<section class="dashboard-card gallery-card"><div class="card-label">Before and after gallery</div><div class="gallery-grid"><div class="gallery-slot"><span>Before</span><div class="placeholder">Blank base model</div></div><div class="gallery-slot"><span>After</span><div class="placeholder">Product placed version</div></div></div></section>
-<div id="courseContent"></div>
-<footer class="footer"><strong>How To Create AI Models for Your Brand</strong><span>© 2026. All rights reserved.</span></footer>
-</main>
-</div>
+
 <template id="courseMarkdown"># How To Create AI Models for Your Brand
 ## Course Overview
 Welcome to a beginner-friendly course on building AI-powered brand visuals from scratch.
-In this course, you will learn how to create realistic AI models, build scenes that match your brand, place your real products onto those models, and turn those images into short videos for social media, ads, and websites. You will use a simple workflow built around ChatGPT or Claude, Higgsfield Soul 2.0, and Nana Banana Pro. Higgsfield Moodboards can be built from up to 80 references, with around 20 to 30 strong references recommended for stronger consistency. [page:1]
+In this course, you will learn how to create realistic AI models, build scenes that match your brand, place your real products onto those models, and turn those images into short videos for social media, ads, and websites. You will use a simple workflow built around ChatGPT or Claude, Higgsfield Soul 2.0, and Nana Banana Pro.
 This course is designed for complete beginners. You do not need to know code, design, or photography before you start.
 ---
 ## Who This Course Is For
@@ -55,30 +144,8 @@ This course is for:
 - Beginners who want to make content faster and cheaper
 If you want professional-looking visuals without paying for traditional photoshoots, this course is for you.
 ---
-## What You Will Learn
-By the end of this course, you will know how to:
-- Understand the basic AI workflow for brand content
-- Write better prompts for models, styling, scenes, and videos
-- Create AI models that fit your brand aesthetic
-- Build consistent brand visuals using Higgsfield Moodboards
-- Use color direction with HEX codes inside Higgsfield
-- Replace blank clothing with your real products
-- Turn still images into short AI videos
-- Repurpose one idea into content for multiple platforms
----
-## Tools You Need
-You only need a small set of tools to follow this workflow:
-### 1. ChatGPT or Claude
-Use one of these to brainstorm ideas, write prompts, simplify your thinking, and improve your creative direction.
-### 2. Higgsfield Soul 2.0
-Use this to create realistic models, scenes, styles, and branded visuals. Higgsfield includes Moodboards, Soul ID, Soul Reference, and Soul HEX for more control over consistency and color. [page:1]
-### 3. Nana Banana Pro
-Use this to replace clothing or insert products into a generated image with more control.
-### 4. Optional video workflow inside Higgsfield
-For moving content, you can generate AI video using processors such as Kling 2.1 or Seedance, depending on the type of motion and finish you want. Kling 2.1 is known for dynamic motion, scene consistency, camera control, and realistic lighting guidance. [page:2]
----
-# Module 1: Understanding the Big Picture
-## Lesson 1.1: What You Are Actually Building
+## Module 1: Understanding the Big Picture
+### Lesson 1.1: What You Are Actually Building
 You are not just making random AI pictures.
 You are building a repeatable brand content system. That system lets you create a model, place your product on the model, build a matching scene, and publish the final result as a still image or video.
 Think of it like this:
@@ -89,15 +156,15 @@ Think of it like this:
 ### Action Step
 Write down one sentence that describes the kind of brand visuals you want to create.
 ### Example
-“My brand visuals should feel clean, premium, urban, and confident.”
----
-## Lesson 1.2: Why This Matters
+"My brand visuals should feel clean, premium, urban, and confident."
+### Lesson 1.2: Why This Matters
 Traditional photoshoots cost time and money. You need models, photographers, locations, lighting, and editing.
 This workflow gives beginners a way to create strong visuals much faster. You can test styles, backgrounds, and products without organizing a full production.
 ### Action Step
 Write down three reasons this workflow would help your business.
 ---
-## Lesson 2.1: What AI Means Here
+## Module 2: Understanding AI in Plain Language
+### Lesson 2.1: What AI Means Here
 AI is a tool that learns patterns from huge amounts of visual and written data. In this course, you are using AI to turn descriptions and reference images into branded visuals.
 AI does not replace your taste. It follows your direction.
 That means your results depend on:
@@ -107,8 +174,7 @@ That means your results depend on:
 - How well you review and improve your outputs
 ### Pro Tip
 Do not treat AI like magic. Treat it like a creative assistant that needs direction.
----
-## Lesson 2.2: AI for Brand Owners
+### Lesson 2.2: AI for Brand Owners
 For a brand owner, AI helps you do four important things:
 - Test ideas quickly
 - Create content more often
@@ -117,7 +183,8 @@ For a brand owner, AI helps you do four important things:
 ### Action Step
 List the top 3 products or content types you want this system to help you create.
 ---
-## Lesson 3.1: The 5-Step Workflow
+## Module 3: The Core Workflow
+### Lesson 3.1: The 5-Step Workflow
 This course uses a simple workflow:
 1. Find inspiration
 2. Write the prompt
@@ -125,8 +192,7 @@ This course uses a simple workflow:
 4. Keep the clothing area simple
 5. Replace the clothing with your real product
 This is the core system you will repeat.
----
-## Lesson 3.2: Step 1 - Find Inspiration
+### Lesson 3.2: Step 1 - Find Inspiration
 Before you write any prompt, collect visual direction.
 Good inspiration sources:
 - Editorial fashion images
@@ -135,64 +201,34 @@ Good inspiration sources:
 - Pinterest boards
 - Previous product shoots
 - Mood references
-Look for:
-- Lighting
-- Pose
-- Color palette
-- Scene type
-- Camera angle
-- Energy
+Look for lighting, pose, color palette, scene type, camera angle, and energy.
 ### Action Step
 Save 10 images that match the brand feel you want.
----
-## Lesson 3.3: Step 2 - Write the Prompt
-Your prompt should explain:
-- Who the model is
-- What they look like
-- What they are wearing
-- Where they are
-- How the scene feels
-- How the image should look
+### Lesson 3.3: Step 2 - Write the Prompt
+Your prompt should explain who the model is, what they look like, what they are wearing, where they are, how the scene feels, and how the image should look.
 ### Prompt Rule
 The clearer the prompt, the better the result.
----
-## Lesson 3.4: Step 3 - Generate in Higgsfield
-Use Higgsfield Soul 2.0 to create your first visual. Higgsfield supports style control through built-in Moodboards, custom Moodboards, Soul Reference, Soul ID, and Soul HEX. [page:1]
-Your goal here is not perfection. Your goal is to create a strong base image.
+### Lesson 3.4: Step 3 - Generate in Higgsfield
+Use Higgsfield Soul 2.0 to create your first visual. Your goal here is not perfection. Your goal is to create a strong base image.
 ### Action Step
 Generate at least 3 versions of the same idea.
----
-## Lesson 3.5: Step 4 - Keep the Clothing Area Simple
+### Lesson 3.5: Step 4 - Keep the Clothing Area Simple
 If you want to swap in your real product later, the product area should start plain.
 Good examples:
 - Plain white tee
 - Plain black hoodie
 - Blank cream sweatshirt
 - Solid-color sneakers
-Avoid:
-- Busy graphics
-- Existing logos
-- Heavy texture
-- Complex layered patterns
+Avoid busy graphics, existing logos, heavy texture, and complex layered patterns.
+### Lesson 3.6: Step 5 - Replace With Your Product
+Once you have a strong base image, move into product placement using Higgsfield Product Placement or Nana Banana Pro.
+Your goal is to keep the same face, pose, lighting, and scene — and only change the clothing or item you want replaced.
 ---
-## Lesson 3.6: Step 5 - Replace With Your Product
-Once you have a strong base image, move into product placement.
-You can use:
-- Higgsfield Product Placement
-- Nana Banana Pro
-Your goal is to keep:
-- The same face
-- The same pose
-- The same lighting
-- The same scene
-And only change the clothing or item you want replaced.
----
-## Lesson 4.1: Why Model Structure Matters
-If your prompt is vague, your model will look generic.
-If your prompt is clear, your model will feel intentional.
+## Module 4: Building Your Model
+### Lesson 4.1: Why Model Structure Matters
+If your prompt is vague, your model will look generic. If your prompt is clear, your model will feel intentional.
 When building your model, describe the person like a casting director would.
----
-## Lesson 4.2: The Model Detail Checklist
+### Lesson 4.2: The Model Detail Checklist
 Include these details when needed:
 - Age range
 - Gender presentation
@@ -205,46 +241,34 @@ Include these details when needed:
 - Distinguishing details like freckles, tattoos, piercings, or makeup
 ### Example
 A young female streetwear model with warm brown skin, almond-shaped eyes, long dark curly hair, full lips, an athletic build, and a calm confident expression.
----
-## Lesson 4.3: Identity Consistency
+### Lesson 4.3: Identity Consistency
 If you want one repeatable brand face, aim for consistency in how you describe the person every time.
-Use:
-- The same age range
-- The same facial features
-- The same hair profile
-- The same energy
-- The same styling direction
-Higgsfield also supports Soul ID for stronger character consistency across generations. [page:1]
+Use the same age range, facial features, hair profile, energy, and styling direction every time.
+Higgsfield also supports Soul ID for stronger character consistency across generations.
 ### Action Step
-Write one “master model description” for your brand.
+Write one master model description for your brand.
 ---
-## Lesson 5.1: The Basic Prompt Formula
+## Module 5: Prompt Writing for Images
+### Lesson 5.1: The Basic Prompt Formula
 Use this image prompt formula:
-```text
+```
 [Subject] + [Appearance] + [Clothing] + [Pose] + [Scene] + [Lighting] + [Style] + [Camera framing]
 ```
-### Example
-```text
+### Example Prompt
+```
 Confident female streetwear model, warm brown skin, long dark wavy hair, wearing a blank oversized cream hoodie and cargo pants, standing with one hand in pocket, on a rooftop in downtown Cleveland, soft golden hour lighting, editorial streetwear photography, full body shot
 ```
----
-## Lesson 5.2: What Makes a Prompt Strong
-A strong prompt is:
-- Specific
-- Visual
-- Easy to picture
-- Focused on one main result
-A weak prompt is too short, too broad, or too mixed up.
+### Lesson 5.2: What Makes a Prompt Strong
+A strong prompt is specific, visual, easy to picture, and focused on one main result.
 ### Weak Example
-```text
+```
 Make a cool fashion model in the city
 ```
-### Stronger Example
-```text
+### Strong Example
+```
 Female fashion model with sharp cheekbones and long straight black hair, wearing a plain oversized black hoodie and fitted cargo pants, standing in a confident pose on a downtown rooftop, moody sunset lighting, luxury streetwear campaign, full body fashion photo
 ```
----
-## Lesson 5.3: Prompt Improvement Method
+### Lesson 5.3: Prompt Improvement Method
 Use this method:
 1. Write your first prompt
 2. Generate 3 to 5 versions
@@ -254,20 +278,12 @@ Use this method:
 ### Pro Tip
 Do not rewrite everything every time. Change one part at a time so you know what caused the difference.
 ---
-## Lesson 6.1: Styling Basics
-Styling tells the viewer what kind of brand this is.
-Think about:
-- Fit
-- Layers
-- Accessories
-- Hair
-- Makeup
-- Color harmony
+## Module 6: Styling and Posing
+### Lesson 6.1: Styling Basics
+Styling tells the viewer what kind of brand this is. Think about fit, layers, accessories, hair, makeup, and color harmony.
 A plain hoodie and cargos can feel completely different depending on the jewelry, bag, shoes, and lighting.
----
-## Lesson 6.2: Posing Basics
-Pose changes the energy of the image.
-Use poses like:
+### Lesson 6.2: Posing Basics
+Pose changes the energy of the image. Use poses like:
 - Standing still, one hand in pocket
 - Slight lean against a wall
 - Walking toward camera
@@ -275,165 +291,89 @@ Use poses like:
 - Looking over shoulder
 - Holding bag at side
 ### Example Pose Prompt
-```text
+```
 Standing with a relaxed but confident posture, one hand in pocket, neutral expression, full body shot
 ```
----
-## Lesson 6.3: Styling and Pose Together
+### Lesson 6.3: Styling and Pose Together
 The best results happen when styling and pose match the scene.
-Examples:
 - Streetwear: confident, relaxed, urban poses
 - Luxury: cleaner posture, controlled expression, polished framing
 - Lifestyle: natural movement, softer expression, casual setting
 ### Action Step
 Write 3 pose descriptions that fit your brand.
 ---
-## Lesson 7.1: Why the Background Matters
-The background tells the viewer what world your brand lives in.
-A strong background can make your content feel:
-- Expensive
-- Raw
-- Minimal
-- Premium
-- Futuristic
-- Everyday
-- Editorial
----
-## Lesson 7.2: Background Prompt Formula
-```text
+## Module 7: Backgrounds and Scenes
+### Lesson 7.1: Why the Background Matters
+The background tells the viewer what world your brand lives in. A strong background can make your content feel expensive, raw, minimal, premium, futuristic, everyday, or editorial.
+### Lesson 7.2: Background Prompt Formula
+```
 [Setting] + [Lighting] + [Mood] + [Environment details] + [Camera angle]
 ```
-### Example
-```text
+### Background Example
+```
 Urban rooftop at dusk, soft golden hour light, clean premium streetwear mood, city skyline in background, full body fashion framing
 ```
----
-## Lesson 7.3: Match the Scene to the Product
-Use backgrounds that support the product:
+### Lesson 7.3: Match the Scene to the Product
 - Streetwear: rooftops, city streets, alleys, concrete spaces
 - Luxury: clean interiors, hotel lobbies, editorial studios
-- Lifestyle: cafés, sidewalks, apartments, parks
+- Lifestyle: cafes, sidewalks, apartments, parks
 - Product catalog: plain studio background
 ### Action Step
 List 5 scene types your brand could use again and again.
 ---
-## Lesson 8.1: Editorial Style
-Editorial photography looks dramatic and premium.
-It often includes:
-- Strong poses
-- Intentional framing
-- Bold lighting
-- Fashion-first composition
-### Example Prompt
-```text
+## Module 8: Photography Styles
+### Lesson 8.1: Editorial Style
+Editorial photography looks dramatic and premium. It often includes strong poses, intentional framing, bold lighting, and fashion-first composition.
+### Editorial Prompt Example
+```
 High fashion editorial photoshoot, dramatic lighting, confident model, luxury streetwear campaign, magazine-style composition
 ```
----
-## Lesson 8.2: Lifestyle Style
-Lifestyle feels natural and relatable.
-It often includes:
-- Everyday locations
-- Casual movement
-- Softer expressions
-- Natural light
----
-## Lesson 8.3: Streetwear Style
-Streetwear visuals often feel bold, urban, gritty, and cool.
-Common elements:
-- Graffiti
-- Rooftops
-- Night lighting
-- Concrete textures
-- Bold styling
----
-## Lesson 8.4: Studio Style
-Studio visuals are clean and simple.
-Use them for:
-- Product pages
-- Lookbooks
-- E-commerce
-- Catalog visuals
----
-## Lesson 8.5: Cinematic Style
-Cinematic visuals feel like a scene from a film.
-Use:
-- Rich atmosphere
-- Strong light direction
-- Story-based settings
-- More dramatic framing
+### Lesson 8.2: Lifestyle Style
+Lifestyle feels natural and relatable. It often includes everyday locations, casual movement, softer expressions, and natural light.
+### Lesson 8.3: Streetwear Style
+Streetwear visuals often feel bold, urban, gritty, and cool. Common elements include graffiti, rooftops, night lighting, concrete textures, and bold styling.
+### Lesson 8.4: Studio Style
+Studio visuals are clean and simple. Use them for product pages, lookbooks, e-commerce, and catalog visuals.
+### Lesson 8.5: Cinematic Style
+Cinematic visuals feel like a scene from a film. Use rich atmosphere, strong light direction, story-based settings, and more dramatic framing.
 ### Action Step
 Choose the main style your brand should lead with.
 ---
-## Lesson 9.1: What Higgsfield Moodboards Do
-Higgsfield Moodboards let you create and save a custom visual style for future generations. They evolved from the original Soul 2.0 Presets and can be combined with Soul ID and reference images for stronger consistency. [page:1]
+## Module 9: Mood Boards and Brand Consistency
+### Lesson 9.1: What Higgsfield Moodboards Do
+Higgsfield Moodboards let you create and save a custom visual style for future generations. They evolved from the original Soul 2.0 Presets and can be combined with Soul ID and reference images for stronger consistency.
 This is how you stop every image from looking random.
----
-## Lesson 9.2: How to Build a Mood Board
+### Lesson 9.2: How to Build a Mood Board
 Follow this process:
 1. Gather your references
 2. Upload them into the Moodboards section
 3. Let Soul 2.0 build your style preset
 4. Apply that Moodboard to future generations
-Higgsfield says you can upload up to 80 images, around 10 strong high-resolution images may already produce consistency, and 20 to 30 references are recommended for even better results. It also recommends cohesive, high-quality references and suggests not uploading faces in the reference batch. [page:1]
----
-## Lesson 9.3: What Makes a Strong Mood Board
-A strong Moodboard is:
-- Cohesive
-- High quality
-- Focused on one visual language
-- Built around one aesthetic direction
-Good references include:
-- Campaign shots
-- Brand colors
-- Interior moods
-- Textures
-- Products
-- Environment references
-Bad references include:
-- Mixed styles
-- Blurry images
-- Random low-quality screenshots
+Higgsfield recommends 20 to 30 cohesive, high-quality references for best results. You can upload up to 80. Do not upload faces in the reference batch.
+### Lesson 9.3: What Makes a Strong Mood Board
+A strong Moodboard is cohesive, high quality, focused on one visual language, and built around one aesthetic direction.
+Good references: campaign shots, brand colors, interior moods, textures, products, environment references.
+Avoid: mixed styles, blurry images, random low-quality screenshots.
 ### Action Step
-Create a folder with 20 to 30 images that all feel like the same brand world. Higgsfield recommends this range for stronger Moodboards. [page:1]
----
-## Lesson 9.4: Naming and Reusing Moodboards
-Name your Moodboards in a way that makes them easy to reuse.
-Examples:
-- COAD Luxury Street
-- Dark Editorial Studio
-- Warm Lifestyle Basics
-- Premium Minimal Product
-Once built, apply the same Moodboard to future generations so your brand visuals stay aligned. Higgsfield describes this as a repeatable style preset. [page:1]
----
-## Lesson 9.5: Soul HEX for Color Control
-Higgsfield includes Soul HEX, which helps guide your image generations with a chosen color palette. Higgsfield lists Soul HEX as a core feature of Soul 2.0 alongside Soul ID, Soul Reference, and Moodboards. [page:1]
-Use HEX codes when you want your brand colors to show up more consistently in:
-- Lighting
-- Background accents
-- Styling tones
-- Set design
-- Overall mood
-### Example
-```text
+Create a folder with 20 to 30 images that all feel like the same brand world.
+### Lesson 9.4: Naming and Reusing Moodboards
+Name your Moodboards so they are easy to reuse. Examples: COAD Luxury Street, Dark Editorial Studio, Warm Lifestyle Basics, Premium Minimal Product.
+Once built, apply the same Moodboard to future generations so your brand visuals stay aligned.
+### Lesson 9.5: Soul HEX for Color Control
+Higgsfield includes Soul HEX, which helps guide your image generations with a chosen color palette. Use HEX codes when you want your brand colors to show up more consistently in lighting, backgrounds, styling tones, and overall mood.
+### Soul HEX Example
+```
 Luxury streetwear campaign with a black and gold color palette, HEX #000000 and #C9A84C, dramatic studio lighting, premium fashion tone
 ```
 ### Action Step
 Write down your main brand HEX colors before you generate anything.
 ---
-## Lesson 10.1: Why Product Placement Matters
-The whole point of this workflow is not just to make beautiful AI people.
-It is to make your real product look like it belongs inside a professional brand campaign.
-That is what product placement solves.
----
-## Lesson 10.2: The Base Image Rule
-Before product placement, generate a strong base image with:
-- Good pose
-- Good lighting
-- Good background
-- Plain clothing in the replaceable area
-This gives the placement tool a clean canvas to work with.
----
-## Lesson 10.3: Product Placement Workflow
+## Module 10: Product Placement in Higgsfield
+### Lesson 10.1: Why Product Placement Matters
+The whole point of this workflow is not just to make beautiful AI people. It is to make your real product look like it belongs inside a professional brand campaign. That is what product placement solves.
+### Lesson 10.2: The Base Image Rule
+Before product placement, generate a strong base image with good pose, good lighting, good background, and plain clothing in the replaceable area. This gives the placement tool a clean canvas to work with.
+### Lesson 10.3: Product Placement Workflow
 1. Generate the base model
 2. Open product placement
 3. Upload your design or product
@@ -441,155 +381,85 @@ This gives the placement tool a clean canvas to work with.
 5. Adjust scale and alignment
 6. Export the final image
 ### Best Practices
-- Use high-resolution files
-- Keep the base garment simple
-- Match the clothing shape to the actual product type
-- Test more than one pose
+Use high-resolution files. Keep the base garment simple. Match the clothing shape to the actual product type. Test more than one pose.
 ---
-## Lesson 11.1: When to Use Nana Banana Pro
-Use Nana Banana Pro when you want more control over replacing a garment or object after the base image is already strong.
-This is useful for:
-- Logo tees
-- Hoodies
-- Jackets
-- Product swaps
-- More exact garment control
----
-## Lesson 11.2: Nana Banana Prompt Template
+## Module 11: Nana Banana Pro Workflow
+### Lesson 11.1: When to Use Nana Banana Pro
+Use Nana Banana Pro when you want more control over replacing a garment or object after the base image is already strong. This is useful for logo tees, hoodies, jackets, product swaps, and more exact garment control.
+### Lesson 11.2: Nana Banana Prompt Template
 Use this structure:
-```text
+```
 Replace only the hoodie with the uploaded garment reference. Keep the same person, same face, same hairstyle, same pose, same body shape, same lighting, same camera angle, and same background. Make the garment fit naturally with realistic folds, seams, shadows, and texture. Do not change the identity or environment.
 ```
----
-## Lesson 11.3: What to Preserve
-Always state what should remain unchanged first.
-Preserve:
-- Face
-- Hair
-- Body shape
-- Pose
-- Scene
-- Lighting
-- Camera angle
-Then describe what should change.
+### Lesson 11.3: What to Preserve
+Always state what should remain unchanged first. Preserve: face, hair, body shape, pose, scene, lighting, camera angle. Then describe what should change.
 ### Action Step
 Create 3 saved replacement prompts for 3 different product types you sell.
 ---
-## Lesson 12.1: Why Video Matters
-Video helps your content feel more real and perform better on social media.
-Short motion can:
-- Show the product from more angles
-- Add realism
-- Increase engagement
-- Give your brand more energy
----
-## Lesson 12.2: Video Tool Direction
-Inside Higgsfield, you may choose different video processors depending on the result you want.
-| Tool | Best use |
+## Module 12: Turning Images Into Videos
+### Lesson 12.1: Why Video Matters
+Video helps your content feel more real and perform better on social media. Short motion can show the product from more angles, add realism, increase engagement, and give your brand more energy.
+### Lesson 12.2: Video Tool Direction
+| Tool | Best Use |
 |---|---|
-| Kling 2.1 | Smooth natural movement, stronger motion realism, scene consistency, camera guidance [page:2] |
+| Kling 2.1 | Smooth natural movement, scene consistency, camera control, realistic lighting |
 | Seedance | More cinematic and stylized motion for campaign-style edits |
----
-## Lesson 12.3: Kling 2.1 Strengths
-Kling 2.1 is described as supporting high visual fidelity, dynamic motion, scene consistency, advanced camera control, and realistic lighting and atmosphere. Those traits make it a strong fit for fashion clips where motion should stay natural and the model should remain visually stable across frames. [page:2]
----
-## Lesson 12.4: Kling 2.1 Prompt Structure
-A strong Kling 2.1 prompt can include:
-- Subject
-- Subject description
-- Subject movement
-- Scene
-- Scene description
-- Camera language
-- Lighting
-- Atmosphere
-This structure comes directly from the prompt guide for Kling 2.1. [page:2]
-### Prompt Formula
-```text
-[Subject] + [Subject description] + [Movement] + [Scene] + [Scene details] + [Camera movement optional] + [Lighting optional] + [Atmosphere optional]
+### Lesson 12.3: Kling 2.1 Prompt Structure
+A strong Kling 2.1 prompt includes: subject, subject description, subject movement, scene, scene description, optional camera language, optional lighting, optional atmosphere.
+### Kling 2.1 Prompt Formula
 ```
-### Example
-```text
+[Subject] + [Subject description] + [Movement] + [Scene] + [Scene details] + [Camera movement] + [Lighting] + [Atmosphere]
+```
+### Kling 2.1 Example Prompt
+```
 Female streetwear model in an oversized black hoodie and cargo pants, calm confident expression, slowly shifting weight and turning slightly to reveal the outfit, standing on a rooftop at dusk with the city skyline behind her, slow dolly-in camera move, soft golden light, premium editorial mood
 ```
----
-## Lesson 12.5: Simple Motion Prompts
-Use simple prompts when the goal is to show the clothing clearly.
-Examples:
+### Lesson 12.4: Simple Motion Prompts
+Use simple prompts when the goal is to show the clothing clearly:
 - Model shifts weight slightly from one leg to the other
 - Model blinks naturally and turns head slightly
 - Model adjusts jacket collar
 - Model takes one step forward and pauses
----
-## Lesson 12.6: Dynamic Motion Prompts
-Use more movement when you want a campaign feel.
-Examples:
+### Lesson 12.5: Dynamic Motion Prompts
+Use more movement when you want a campaign feel:
 - Slow runway walk
 - Half turn to reveal the back of the garment
 - Walking toward camera
 - Light twirl in place
 - Pause and glance at camera
 ### Pro Tip
-Do not overload one prompt with too many actions. Kling guidance recommends being specific, using natural language, and avoiding overly complex scene directions. [page:2]
----
-## Lesson 12.7: Best Practices for Fashion Video
+Do not overload one prompt with too many actions. Be specific, use natural language, and avoid overly complex scene directions.
+### Lesson 12.6: Best Practices for Fashion Video
 - Keep clips short, around 5 to 10 seconds
 - Focus on one main action
 - Keep the motion subtle when the clothing is the star
 - Generate multiple versions
 - Use camera movement only when it adds value
-Kling guidance recommends structured prompts, natural language, and iterative refinement to improve results over time. [page:2]
 ---
-## Lesson 13.1: One Shoot, Many Assets
-One strong generation session can become:
-- Website banners
-- Product pages
-- Instagram posts
-- Reels
-- TikTok clips
-- Pinterest pins
-- Ad creatives
-- Email graphics
-Your job is to think in batches, not one-offs.
----
-## Lesson 13.2: Platform Strategy
-### Instagram Reels
-Best for polished mini campaigns, product reveals, and editorial clips.
-### TikTok
-Best for faster, more casual, behind-the-scenes or process-driven content.
-### Pinterest
-Best for evergreen traffic and style inspiration searches.
-### Website
-Best for trust, conversion, and visual storytelling on product and landing pages.
-### Paid Ads
-Best for testing hooks, thumbnails, product styling, and scene variations.
----
-## Lesson 13.3: The 4 Content Types You Need
-1. Hero content
-Big visual campaign pieces
-2. Engagement content
-More casual, trend-driven, social-first edits
-3. Educational content
-Show the process, explain the brand, teach the audience something
-4. Conversion content
-Clear product-focused visuals with a direct call to action
+## Module 13: Content Strategy and Publishing
+### Lesson 13.1: One Shoot, Many Assets
+One strong generation session can become website banners, product pages, Instagram posts, Reels, TikTok clips, Pinterest pins, ad creatives, and email graphics. Your job is to think in batches, not one-offs.
+### Lesson 13.2: Platform Strategy
+Instagram Reels: best for polished mini campaigns, product reveals, and editorial clips.
+TikTok: best for faster, more casual, behind-the-scenes or process-driven content.
+Pinterest: best for evergreen traffic and style inspiration searches.
+Website: best for trust, conversion, and visual storytelling.
+Paid Ads: best for testing hooks, thumbnails, product styling, and scene variations.
+### Lesson 13.3: The 4 Content Types You Need
+1. Hero content — big visual campaign pieces
+2. Engagement content — casual, trend-driven, social-first edits
+3. Educational content — show the process, explain the brand
+4. Conversion content — clear product-focused visuals with a direct call to action
 ### Action Step
 Plan one week of content using all 4 types.
 ---
-# Final Project
-## Final Assignment: Build Your First Mini Campaign
-Create a simple 3-part AI campaign for your brand.
+## Final Project
 ### Part 1: The Still Image
-- Generate a model and scene in Higgsfield
-- Use a clear prompt
-- Use at least one reference image
+Generate a model and scene in Higgsfield. Use a clear prompt. Use at least one reference image.
 ### Part 2: The Moodboard Version
-- Build a Moodboard with 20 to 30 strong references for consistency, which Higgsfield recommends for better results [page:1]
-- Generate a second version using that Moodboard
+Build a Moodboard with 20 to 30 strong references. Generate a second version using that Moodboard.
 ### Part 3: The Product Placement Version
-- Replace the garment with your real product
-- Export the final image
-- Optional: animate the final image into a 5 to 10 second clip
+Replace the garment with your real product. Export the final image. Optional: animate the final image into a 5 to 10 second clip.
 ### Review Checklist
 - Does the product look natural
 - Does the lighting match
@@ -597,29 +467,25 @@ Create a simple 3-part AI campaign for your brand.
 - Does the content feel consistent
 - Would this look believable as a real campaign
 ---
-# Bonus Templates
-## Template 1: Master Model Prompt
-```text
+## Bonus Templates
+### Template 1: Master Model Prompt
+```
 Confident [gender presentation] model, [skin tone], [face shape], [eye details], [hair details], [body build], [expression], wearing [blank garment], in a [scene], [lighting], [style], [camera framing]
 ```
-## Template 2: Background Prompt
-```text
+### Template 2: Background Prompt
+```
 [Setting], [time of day], [lighting], [mood], [environment details], [camera angle]
 ```
-## Template 3: Product Replacement Prompt
-```text
+### Template 3: Product Replacement Prompt
+```
 Replace only the [garment] with the uploaded product reference. Keep the same face, hair, body shape, pose, background, lighting, and camera angle. Make the garment look realistic with natural folds, shadows, seams, and texture. Do not change the person or environment.
 ```
-## Template 4: Video Prompt
-```text
-[Subject] + [appearance] + [movement] + [scene] + [scene details] + [camera movement optional] + [lighting optional] + [atmosphere optional]
+### Template 4: Video Prompt
 ```
----
-# Course Closing Note
-This workflow gets more powerful as you repeat it.
-The goal is not to make one nice image. The goal is to build a repeatable system that helps your brand create content faster, cheaper, and with more consistency than traditional shoots.
-Start simple. Keep your prompts clear. Build your Moodboard early. Focus on consistency, not perfection.
+[Subject] + [appearance] + [movement] + [scene] + [scene details] + [camera movement] + [lighting] + [atmosphere]
+```
 </template>
+
 <script src="script.js"></script>
 </body>
 </html>
