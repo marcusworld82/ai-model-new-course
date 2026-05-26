@@ -1,251 +1,337 @@
 
-const completed = JSON.parse(localStorage.getItem('aiModelsCompleted') || '{}');
-const lastLessonKey = 'aiModelsLastLesson';
-const tmpl = document.getElementById('courseMarkdown');
-const markdown = tmpl ? tmpl.innerHTML.trim() : '';
-const content = document.getElementById('courseContent');
-const nav = document.getElementById('moduleNav');
+// ── State ──────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'aiCourseCompleted';
+const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+// ── DOM refs ────────────────────────────────────────────────────────────
+const tmpl        = document.getElementById('courseMarkdown');
+const content     = document.getElementById('courseContent');
+const nav         = document.getElementById('moduleNav');
 const progressBar = document.getElementById('progressBar');
-const progressText = document.getElementById('progressText');
-const modulesDone = document.getElementById('modulesDone');
-const lessonsDone = document.getElementById('lessonsDone');
-const resumeBtn = document.getElementById('resumeBtn');
-const nextLessonTitle = document.getElementById('nextLessonTitle');
-const nextLessonDesc = document.getElementById('nextLessonDesc');
-const copyAllPrompts = document.getElementById('copyAllPrompts');
-const sidebar = document.getElementById('sidebar');
-const menuToggle = document.getElementById('menuToggle');
-const closeSidebarBtn = document.getElementById('closeSidebar');
+const progressText= document.getElementById('progressText');
+const modulesDoneEl = document.getElementById('modulesDone');
+const lessonsDoneEl = document.getElementById('lessonsDone');
+const resumeBtn   = document.getElementById('resumeBtn');
+const nextTitle   = document.getElementById('nextLessonTitle');
+const nextDesc    = document.getElementById('nextLessonDesc');
+const promptLib   = document.getElementById('promptLibrary');
+const sidebar     = document.getElementById('sidebar');
+const menuToggle  = document.getElementById('menuToggle');
+const closeBtn    = document.getElementById('closeSidebar');
 
+// ── Helpers ─────────────────────────────────────────────────────────────
 function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(completed)); }
 
-const lines = markdown.split(/\r?\n/);
-const modules = [];
-let currentModule = null;
-let allPrompts = [];
-let out = '';
+// ── Parse markdown into modules ─────────────────────────────────────────
+const raw = tmpl ? tmpl.innerHTML.trim() : '';
+const lines = raw.split(/\r?\n/);
+const modules = [];   // [{title, id, lessons:[{title,id,prompts:[],body:''}]}]
+let curMod = null, curLesson = null;
+let allPrompts = [];  // all code blocks for prompt library
 
-for(let i=0; i<lines.length; i++){
+for(let i=0;i<lines.length;i++){
   const line = lines[i];
   const trim = line.trim();
   if(!trim || trim==='---') continue;
 
-  // H1 top level title - skip
-  if(/^# [^#]/.test(line)){
-    continue;
-  }
-  // H2 = module heading
+  // H1 skip
+  if(/^# [^#]/.test(line)) continue;
+
+  // H2 = module
   if(/^## [^#]/.test(line)){
+    curLesson = null;
     const title = trim.slice(3).trim();
-    const id = slug(title);
-    if(currentModule) out += '</div></section>';
-    currentModule = {title, id, lessons:[]};
-    modules.push(currentModule);
-    out += `<section class="lesson-section" id="${id}">`;
-    out += `<h2 class="module-title">${esc(title)}</h2>`;
-    out += `<div class="lessons-wrap">`;
+    curMod = {title, id:slug(title), lessons:[]};
+    modules.push(curMod);
     continue;
   }
-  // H3 = lesson heading
+
+  // H3 = lesson
   if(/^### [^#]/.test(line)){
     const title = trim.slice(4).trim();
-    const id = slug(title);
-    if(currentModule) currentModule.lessons.push({title, id});
-    // check if it's a special callout type
-    const isProTip = title.toLowerCase().includes('pro tip') || title.toLowerCase().includes('action step') || title.toLowerCase().includes('prompt rule') || title.toLowerCase().includes('best practices') || title.toLowerCase().includes('example') || title.toLowerCase().includes('review checklist');
-    if(isProTip){
-      out += `<div class="callout" id="${id}"><h3>${esc(title)}</h3>`;
-      let j=i+1;
-      while(j<lines.length && lines[j].trim() && !/^#{1,3} /.test(lines[j])){
-        const cl = lines[j].trim();
-        if(cl.startsWith('- ')){
-          out += '<ul>';
-          while(j<lines.length && lines[j].trim().startsWith('- ')){
-            out += `<li>${esc(lines[j].trim().slice(2))}</li>`;
-            j++;
-          }
-          out += '</ul>';
-        } else if(/^\d+\. /.test(cl)){
-          out += '<ol>';
-          while(j<lines.length && /^\d+\. /.test(lines[j].trim())){
-            out += `<li>${esc(lines[j].trim().replace(/^\d+\. /,''))}</li>`;
-            j++;
-          }
-          out += '</ol>';
-        } else {
-          out += `<p>${esc(cl)}</p>`;
-          j++;
-        }
-      }
-      out += '</div>';
-      i = j-1;
-    } else {
-      out += `<div class="lesson-card" id="${id}">`;
-      out += `<div class="lesson-card-header"><span class="status-pill ${completed[id]?'done':''}">`;
-      out += completed[id] ? 'Complete' : 'Lesson';
-      out += `</span><span class="lesson-title-main">${esc(title)}</span></div>`;
-    }
+    curLesson = {title, id:slug(title), body:'', prompts:[]};
+    if(curMod) curMod.lessons.push(curLesson);
     continue;
   }
+
   // code block
   if(trim.startsWith('```')){
-    let code = '';
-    i++;
-    while(i<lines.length && !lines[i].trim().startsWith('```')){
-      code += lines[i] + '\n';
-      i++;
-    }
-    allPrompts.push(code.trim());
-    out += `<div class="code-box"><button class="copy-btn">Copy</button><pre><code>${esc(code.trim())}</code></pre></div>`;
+    let code=''; i++;
+    while(i<lines.length && !lines[i].trim().startsWith('```')){ code+=lines[i]+'\n'; i++; }
+    const codeClean = code.trim();
+    allPrompts.push(codeClean);
+    if(curLesson) curLesson.prompts.push(codeClean);
+    if(curLesson) curLesson.body += `<div class="code-box"><button class="copy-btn">Copy</button><pre><code>${esc(codeClean)}</code></pre></div>`;
     continue;
   }
+
   // table
   if(trim.startsWith('|')){
-    out += '<div class="table-wrap"><table><tbody>';
+    let tbl='<div class="table-wrap"><table><tbody>';
     while(i<lines.length && lines[i].trim().startsWith('|')){
-      if(lines[i].includes('---')){ i++; continue; }
-      const cells = lines[i].split('|').filter(c=>c.trim());
-      out += '<tr>' + cells.map(c=>`<td>${esc(c.trim())}</td>`).join('') + '</tr>';
+      if(lines[i].includes('---')){i++;continue;}
+      const cells=lines[i].split('|').filter(c=>c.trim());
+      tbl+='<tr>'+cells.map(c=>`<td>${esc(c.trim())}</td>`).join('')+'</tr>';
       i++;
     }
-    out += '</tbody></table></div>';
-    i--;
+    tbl+='</tbody></table></div>'; i--;
+    if(curLesson) curLesson.body+=tbl;
     continue;
   }
-  // unordered list
+
+  // ul
   if(trim.startsWith('- ')){
-    out += '<ul>';
+    let ul='<ul>';
     while(i<lines.length && lines[i].trim().startsWith('- ')){
-      out += `<li>${esc(lines[i].trim().slice(2))}</li>`;
-      i++;
+      ul+=`<li>${esc(lines[i].trim().slice(2))}</li>`; i++;
     }
-    out += '</ul>';
-    i--;
+    ul+='</ul>'; i--;
+    if(curLesson) curLesson.body+=ul;
+    else if(curMod && !curLesson) curMod._intro=(curMod._intro||'') + ul;
     continue;
   }
-  // ordered list
+
+  // ol
   if(/^\d+\. /.test(trim)){
-    out += '<ol>';
-    while(i<lines.length && /^\d+\. /.test(lines[i].trim())){
-      out += `<li>${esc(lines[i].trim().replace(/^\d+\. /,''))}</li>`;
-      i++;
+    let ol='<ol>';
+    while(i<lines.length && /^\d+\. /.test((lines[i]||'').trim())){
+      ol+=`<li>${esc(lines[i].trim().replace(/^\d+\. /,''))}</li>`; i++;
     }
-    out += '</ol>';
-    i--;
+    ol+='</ol>'; i--;
+    if(curLesson) curLesson.body+=ol;
     continue;
   }
+
   // paragraph
   if(trim){
-    out += `<p>${esc(trim)}</p>`;
+    const special = /^(pro tip|action step|prompt rule|best practice|review checklist|example)/i.test(trim);
+    const tag = special ? `<p class="callout-p">${esc(trim)}</p>` : `<p>${esc(trim)}</p>`;
+    if(curLesson) curLesson.body+=tag;
+    else if(curMod) curMod._intro=(curMod._intro||'')+tag;
   }
 }
-if(currentModule) out += '</div></section>';
-content.innerHTML = out;
 
-// Add mark complete buttons to lesson cards
-document.querySelectorAll('.lesson-card').forEach(card=>{
-  const footer = document.createElement('div');
-  footer.className = 'lesson-footer';
-  footer.innerHTML = `<button class="mark-complete${completed[card.id]?' done':''}" data-id="${card.id}">${completed[card.id]?'&#10003; Completed':'Mark as Complete'}</button>`;
-  card.appendChild(footer);
-});
+// ── Determine unlock state ──────────────────────────────────────────────
+function isModuleComplete(mod){
+  return mod.lessons.length > 0 && mod.lessons.every(l=>completed[l.id]);
+}
+function isModuleUnlocked(modIndex){
+  if(modIndex===0) return true;
+  return isModuleComplete(modules[modIndex-1]);
+}
+function firstIncompleteLessonId(){
+  for(const mod of modules){
+    for(const l of mod.lessons){
+      if(!completed[l.id]) return l.id;
+    }
+  }
+  return null;
+}
 
-// Build sidebar nav
-function buildNav(){
-  nav.innerHTML = '';
-  modules.forEach(mod=>{
+// ── Render lesson card HTML ─────────────────────────────────────────────
+function lessonCardHTML(lesson, modIndex){
+  const unlocked = isModuleUnlocked(modIndex);
+  const done = completed[lesson.id];
+  return `
+  <div class="lesson-card ${done?'done':''} ${!unlocked?'locked':''}" id="${lesson.id}">
+    <div class="lesson-card-header">
+      <span class="status-pill ${done?'done':''}">${done?'&#10003; Complete':'Lesson'}</span>
+      <span class="lesson-title-main">${esc(lesson.title)}</span>
+    </div>
+    <div class="lesson-body">${lesson.body}</div>
+    <div class="lesson-footer">
+      <button class="mark-complete ${done?'done':''}" data-id="${lesson.id}" ${!unlocked?'disabled':''}>
+        ${done?'&#10003; Completed':'Mark as Complete'}
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── Render all module sections ──────────────────────────────────────────
+function renderContent(){
+  let out='';
+  modules.forEach((mod,mi)=>{
+    const unlocked = isModuleUnlocked(mi);
+    const complete = isModuleComplete(mod);
+    out+=`<section class="module-section ${complete?'module-done':''} ${!unlocked?'module-locked':''}" id="mod-${mod.id}">`;
+    out+=`<div class="module-header-bar">
+      <span class="module-number">Module ${mi+1}</span>
+      <h2 class="module-title">${esc(mod.title)}</h2>
+      ${complete?'<span class="module-badge">&#10003; Module Complete</span>':''}
+      ${!unlocked?'<span class="module-badge locked-badge">&#128274; Locked</span>':''}
+    </div>`;
+    if(unlocked){
+      if(mod._intro) out+=`<div class="module-intro">${mod._intro}</div>`;
+      out+=`<div class="lessons-wrap">`;
+      mod.lessons.forEach(l=>{ out+=lessonCardHTML(l,mi); });
+      out+=`</div>`;
+    } else {
+      out+=`<div class="locked-notice">Complete the previous module to unlock this one.</div>`;
+    }
+    out+=`</section>`;
+  });
+  content.innerHTML=out;
+  attachCopyButtons();
+}
+
+function attachCopyButtons(){
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const txt=btn.nextElementSibling?.innerText||'';
+      navigator.clipboard.writeText(txt);
+      btn.textContent='Copied';
+      setTimeout(()=>btn.textContent='Copy',1400);
+    };
+  });
+}
+
+// ── Render sidebar ──────────────────────────────────────────────────────
+function renderNav(){
+  nav.innerHTML='';
+  modules.forEach((mod,mi)=>{
+    const unlocked = isModuleUnlocked(mi);
+    const complete = isModuleComplete(mod);
+    const doneLessons = mod.lessons.filter(l=>completed[l.id]).length;
+
     const details = document.createElement('details');
-    details.open = true;
+    if(!unlocked) details.classList.add('nav-locked');
+    if(unlocked && !complete) details.open=true; // open current module
+
     const summary = document.createElement('summary');
-    const doneCount = mod.lessons.filter(l=>completed[l.id]).length;
-    summary.innerHTML = `<span class="mod-name">${esc(mod.title)}</span><span class="mod-progress">${doneCount}/${mod.lessons.length}</span>`;
+    summary.innerHTML=`
+      <span class="nav-mod-icon">${complete?'&#10003;':!unlocked?'&#128274;':''}</span>
+      <span class="nav-mod-title">${esc(mod.title)}</span>
+      <span class="nav-mod-count">${doneLessons}/${mod.lessons.length}</span>
+    `;
+    if(!unlocked){
+      summary.onclick=(e)=>{ e.preventDefault(); };
+    }
     details.appendChild(summary);
-    const list = document.createElement('div');
-    list.className = 'lesson-list';
-    mod.lessons.forEach(l=>{
-      const a = document.createElement('a');
-      a.href = `#${l.id}`;
-      a.className = 'lesson-link' + (completed[l.id]?' done':'');
-      a.dataset.target = l.id;
-      a.innerHTML = `${completed[l.id]?'<span class="check">&#10003;</span>':''}<span>${esc(l.title)}</span>`;
-      list.appendChild(a);
-    });
-    details.appendChild(list);
+
+    if(unlocked){
+      const list = document.createElement('div');
+      list.className='lesson-list';
+      mod.lessons.forEach(l=>{
+        const a=document.createElement('a');
+        a.href=`#${l.id}`;
+        a.className='lesson-link'+(completed[l.id]?' done':'');
+        a.dataset.target=l.id;
+        a.innerHTML=`<span class="ll-check">${completed[l.id]?'&#10003;':''}</span><span>${esc(l.title)}</span>`;
+        a.onclick=()=>sidebar.classList.remove('open');
+        list.appendChild(a);
+      });
+      details.appendChild(list);
+    }
     nav.appendChild(details);
   });
 }
-buildNav();
 
-// Populate prompt library
-const promptLib = document.getElementById('promptLibrary');
-if(promptLib && allPrompts.length){
-  promptLib.innerHTML = allPrompts.map((p,i)=>`<div class="prompt-item"><button class="copy-btn">Copy</button><pre><code>${esc(p)}</code></pre></div>`).join('');
+// ── Prompt Library ──────────────────────────────────────────────────────
+function renderPromptLibrary(){
+  if(!promptLib) return;
+  // Group prompts by lesson
+  let html='';
+  modules.forEach((mod,mi)=>{
+    mod.lessons.forEach(l=>{
+      if(!l.prompts.length) return;
+      const id='pl-'+l.id;
+      html+=`<div class="pl-group">
+        <button class="pl-toggle" data-target="${id}">${esc(l.title)} <span class="pl-arrow">&#9660;</span></button>
+        <div class="pl-body" id="${id}" style="display:none">
+          ${l.prompts.map((p,pi)=>`
+            <div class="code-box" style="margin-top:10px">
+              <button class="copy-btn">Copy</button>
+              <pre><code>${esc(p)}</code></pre>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    });
+  });
+  promptLib.innerHTML = html || '<p style="color:#a7a7a7;font-size:14px">Prompts will appear here as you progress through lessons.</p>';
+  attachCopyButtons();
+
+  document.querySelectorAll('.pl-toggle').forEach(btn=>{
+    btn.onclick=()=>{
+      const body=document.getElementById(btn.dataset.target);
+      const open=body.style.display==='block';
+      body.style.display=open?'none':'block';
+      btn.querySelector('.pl-arrow').textContent=open?'\u25BC':'\u25B2';
+    };
+  });
 }
 
+// ── Progress ────────────────────────────────────────────────────────────
 function updateProgress(){
-  const all = [...document.querySelectorAll('.lesson-card')];
-  const done = all.filter(c=>completed[c.id]).length;
-  const pct = all.length ? Math.round(done/all.length*100) : 0;
-  progressBar.style.width = pct+'%';
-  progressText.textContent = pct+'%';
-  lessonsDone.textContent = done;
-  const completedMods = modules.filter(m=>m.lessons.length && m.lessons.every(l=>completed[l.id])).length;
-  modulesDone.textContent = completedMods;
-  const next = all.find(c=>!completed[c.id]) || all[0];
-  if(next){
-    nextLessonTitle.textContent = next.querySelector('.lesson-title-main')?.textContent || 'Next lesson';
-    nextLessonDesc.textContent = next.querySelector('p')?.textContent?.slice(0,140) || 'Continue through the course.';
-    localStorage.setItem(lastLessonKey, next.id);
+  const allLessons=modules.flatMap(m=>m.lessons);
+  const done=allLessons.filter(l=>completed[l.id]).length;
+  const pct=allLessons.length?Math.round(done/allLessons.length*100):0;
+  progressBar.style.width=pct+'%';
+  progressText.textContent=pct+'%';
+  lessonsDoneEl.textContent=done;
+  const completedMods=modules.filter(m=>isModuleComplete(m)).length;
+  modulesDoneEl.textContent=completedMods;
+
+  const nextId=firstIncompleteLessonId();
+  if(nextId){
+    const mod=modules.find(m=>m.lessons.some(l=>l.id===nextId));
+    const lesson=mod?.lessons.find(l=>l.id===nextId);
+    if(lesson){
+      nextTitle.textContent=lesson.title;
+      nextDesc.textContent=(lesson.body.replace(/<[^>]+>/g,' ').trim().slice(0,140))||'Continue through the course.';
+      localStorage.setItem('aiCourseLastLesson',nextId);
+    }
   }
 }
-updateProgress();
 
-// Event delegation
-document.addEventListener('click', e=>{
-  if(e.target.classList.contains('mark-complete')){
-    const id = e.target.dataset.id;
-    completed[id] = !completed[id];
-    localStorage.setItem('aiModelsCompleted', JSON.stringify(completed));
-    e.target.textContent = completed[id] ? '\u2713 Completed' : 'Mark as Complete';
-    e.target.classList.toggle('done', completed[id]);
-    const card = document.getElementById(id);
-    if(card){
-      const pill = card.querySelector('.status-pill');
-      if(pill){ pill.textContent = completed[id]?'Complete':'Lesson'; pill.className='status-pill'+(completed[id]?' done':''); }
-    }
-    buildNav();
+// ── Mark complete handler ───────────────────────────────────────────────
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('mark-complete') && !e.target.disabled){
+    const id=e.target.dataset.id;
+    completed[id]=true;
+    save();
+    renderContent();
+    renderNav();
+    renderPromptLibrary();
     updateProgress();
-  }
-  if(e.target.classList.contains('copy-btn')){
-    const txt = e.target.nextElementSibling?.innerText || '';
-    navigator.clipboard.writeText(txt);
-    e.target.textContent = 'Copied';
-    setTimeout(()=>e.target.textContent='Copy', 1400);
-  }
-  if(e.target.id==='copyAllPrompts'){
-    navigator.clipboard.writeText(allPrompts.join('\n\n'));
-    e.target.textContent = 'Copied';
-    setTimeout(()=>e.target.textContent='Copy all prompts', 1400);
+    // scroll to next lesson or next module
+    const allLessons=modules.flatMap(m=>m.lessons);
+    const idx=allLessons.findIndex(l=>l.id===id);
+    const nextLesson=allLessons[idx+1];
+    if(nextLesson){
+      setTimeout(()=>{
+        const el=document.getElementById(nextLesson.id);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+      },200);
+    }
   }
   if(e.target.id==='resumeBtn'){
-    const id = localStorage.getItem(lastLessonKey);
-    if(id) document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+    const id=localStorage.getItem('aiCourseLastLesson');
+    if(id) document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
   }
 });
 
-menuToggle?.addEventListener('click', ()=>sidebar.classList.add('open'));
-closeSidebarBtn?.addEventListener('click', ()=>sidebar.classList.remove('open'));
-document.querySelectorAll('.lesson-link').forEach(a=>a.addEventListener('click', ()=>sidebar.classList.remove('open')));
+// ── Mobile sidebar ──────────────────────────────────────────────────────
+menuToggle?.addEventListener('click',()=>sidebar.classList.add('open'));
+closeBtn?.addEventListener('click',()=>sidebar.classList.remove('open'));
 
-// Highlight active lesson on scroll
-const observer = new IntersectionObserver(entries=>{
+// ── Scroll active highlight ──────────────────────────────────────────────
+const observer=new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
       document.querySelectorAll('.lesson-link').forEach(a=>a.classList.remove('active'));
-      const active = document.querySelector(`.lesson-link[data-target="${entry.target.id}"]`);
-      if(active) active.classList.add('active');
+      const a=document.querySelector(`.lesson-link[data-target="${entry.target.id}"]`);
+      if(a) a.classList.add('active');
     }
   });
-},{threshold:0.3});
-document.querySelectorAll('.lesson-card').forEach(c=>observer.observe(c));
+},{threshold:0.4});
+
+function observeLessons(){ document.querySelectorAll('.lesson-card').forEach(c=>observer.observe(c)); }
+
+// ── Init ─────────────────────────────────────────────────────────────────
+renderContent();
+renderNav();
+renderPromptLibrary();
+updateProgress();
+observeLessons();
